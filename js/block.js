@@ -532,7 +532,7 @@ export function getBlockMarkup(
     }
     if (!blockTag) {
        blockTag = getBlockTag(block.type);
-       if (hasUnhandledBlockMapping) {
+       if (hasUnhandledBlockMapping && !blockTag) {
           const mapping = unhandledBlockMapping(block.type, block);
           if (mapping) {
             ({blockTag, additional} = mapping);
