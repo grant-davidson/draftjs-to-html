@@ -507,7 +507,12 @@ export function getBlockMarkup(
   hashtagConfig,
   directional,
   customEntityTransform,
+  customBlockMapping,
+  unhandledBlockMapping,
 ) {
+  const hasCustomBlockMapping = typeof(customBlockMapping) === "function";
+  const hasUnhandledBlockMapping = typeof(unhandledBlockMapping) === "function";
+  
   const blockHtml = [];
   if (isAtomicEntityBlock(block)) {
     blockHtml.push(getEntityMarkup(
@@ -517,9 +522,25 @@ export function getBlockMarkup(
       customEntityTransform,
     ));
   } else {
-    const blockTag = getBlockTag(block.type);
+    let blockTag;
+    let additional = "";
+    if (hasCustomBlockMapping) {
+       const mapping = customBlockMapping(block.type, block);
+       if (mapping) {
+         ({blockTag, additional} = mapping);
+       }
+    }
+    if (!blockTag) {
+       blockTag = getBlockTag(block.type);
+       if (hasUnhandledBlockMapping) {
+          const mapping = unhandledBlockMapping(block.type, block);
+          if (mapping) {
+            ({blockTag, additional} = mapping);
+          }
+       }       
+    }
     if (blockTag) {
-      blockHtml.push(`<${blockTag}`);
+      blockHtml.push(`<${blockTag}${additional}`);
       const blockStyle = getBlockStyle(block.data);
       if (blockStyle) {
         blockHtml.push(` style="${blockStyle}"`);

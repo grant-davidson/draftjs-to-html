@@ -11,6 +11,8 @@ export default function draftToHtml(
   hashtagConfig,
   directional,
   customEntityTransform,
+  customBlockMapping,
+  unhandledBlockMapping
 ) {
   const html = [];
   if (editorContent) {
@@ -32,6 +34,8 @@ export default function draftToHtml(
             hashtagConfig,
             directional,
             customEntityTransform,
+            customBlockMapping,
+            unhandledBlockMapping
           );
           html.push(blockHtml);
         }
