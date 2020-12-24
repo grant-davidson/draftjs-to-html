@@ -1,4 +1,4 @@
-import { forEach, isEmptyString } from './common';
+import { forEach, isEmptyString, isNumeric } from './common';
 
 /**
 * Mapping block-type to corresponding html tag.
@@ -16,6 +16,7 @@ const blockTypesMapping = {
   blockquote: 'blockquote',
   code: 'pre',
 };
+
 
 /**
 * Function will return HTML tag for a block.
@@ -332,11 +333,26 @@ function getEntityMarkup(
     return `<a href="${entity.data.url}" target="${targetOption}">${text}</a>`;
   }
   if (entity.type === 'IMAGE') {
-    const { alignment } = entity.data;
-    if (alignment && alignment.length) {
-      return `<div style="text-align:${alignment};"><img src="${entity.data.src}" alt="${entity.data.alt}" style="height: ${entity.data.height};width: ${entity.data.width}"/></div>`;
+    let { alignment, width, height } = entity.data;
+    let style = "";
+    if (width !== undefined || height !== undefined) {      
+      if (isNumeric(width)) {
+        width = `${width}%`;
+      }
+      if (isNumeric(height)) {
+        height = `${height}%`;
+      }
+      if (height === undefined) {        
+        style = `style="width: ${width}"`;
+      } else {
+          style = `style="height: ${height};width: ${width}"`;
+      }
     }
-    return `<img src="${entity.data.src}" alt="${entity.data.alt}" style="height: ${entity.data.height};width: ${entity.data.width}"/>`;
+
+    if (alignment && alignment.length) {
+      return `<div style="text-align:${alignment};"><img src="${entity.data.src}" alt="${entity.data.alt}" ${style}/></div>`;
+    }
+    return `<img src="${entity.data.src}" alt="${entity.data.alt}" ${style}/>`;
   }
   if (entity.type === 'EMBEDDED_LINK') {
     return `<iframe width="${entity.data.width}" height="${entity.data.height}" src="${entity.data.src}" frameBorder="0"></iframe>`;

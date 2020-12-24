@@ -22,3 +22,13 @@ export function isEmptyString(str) {
   }
   return false;
 }
+
+/**
+ * isNumeric returns true if the supplied value is either a number or a string
+ * the is solely numeric
+ */
+export function isNumeric(str) {
+  if (typeof(str) === "number") return true;
+  if (isEmptyString(str)) return false;
+  return /^-?\d+$/.test(str.trim());
+}
